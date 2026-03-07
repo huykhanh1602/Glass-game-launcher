@@ -1,6 +1,6 @@
 import { SteamGridDB_API_KEY } from "./API_key.js";
 
-async function fetchGameId(gameName) {
+export async function fetchGameId(gameName) {
     try {
         const response = await fetch(
             "https://www.steamgriddb.com/api/v2/search/autocomplete/" +
@@ -23,7 +23,7 @@ async function fetchGameId(gameName) {
     }
 }
 
-async function fetchGameIcon(game_id) {
+export async function fetchGameIcon(game_id) {
     try {
         const response = await fetch(`https://www.steamgriddb.com/api/v2/icons/game/${game_id}`, {
             headers: { Authorization: `Bearer ${SteamGridDB_API_KEY}` },
@@ -42,7 +42,7 @@ async function fetchGameIcon(game_id) {
     }
 }
 
-async function fetchGameHeros(game_id) {
+export async function fetchGameHeros(game_id) {
     try {
         const response = await fetch(`https://www.steamgriddb.com/api/v2/heroes/game/${game_id}`, {
             headers: { Authorization: `Bearer ${SteamGridDB_API_KEY}` },
@@ -59,6 +59,8 @@ async function fetchGameHeros(game_id) {
         return null;
     }
 }
+
+export default { fetchGameId, fetchGameIcon, fetchGameHeros };
 
 fetchGameId("arknight endfield").then((data) => {
     if (data) {
