@@ -1,6 +1,6 @@
 import { fileURLToPath } from "url";
 import path from "path";
-import { ipcMain, dialog } from "electron";
+import { dialog } from "electron";
 import fs from "fs/promises";
 import { spawn } from "child_process";
 import { exec } from "child_process";
@@ -19,3 +19,48 @@ export async function handleGetGames() {
         return [];
     }
 }
+
+export async function addGame(win) {
+    const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+        title: "Select Game Executable",
+        filters: [{ name: "Executables", extensions: ["exe"] }],
+        properties: ["openFile"],
+    });
+
+    if (canceled || filePaths.length === 0) {
+        return null;
+    }
+
+    const filePath = filePaths[0];
+    const fileName = path.basename(filePath, path.extname(filePath));
+
+    try {
+        const data = await fs.readFile(DATA_PATH, "utf-8");
+        const json = JSON.parse(data);
+
+        const newGame = {
+            id: Date.now().toString(),
+            name: fileName,
+            path: filePath,
+        };
+
+        json.games.push(newGame);
+        await fs.writeFile(DATA_PATH, JSON.stringify(json, null, 2));
+
+        return newGame;
+    } catch (error) {
+        console.error("Error adding game:", error);
+        return null;
+    }
+}
+
+export async function runGame(game) {
+    exec(`"${game.path}"`, (error) => {
+        if (error) {
+            console.error("Lỗi khi chạy game:", error);
+        }
+    });
+    return true;
+}
+
+export default { handleGetGames, addGame, runGame };

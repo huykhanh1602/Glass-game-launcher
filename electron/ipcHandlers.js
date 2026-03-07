@@ -2,6 +2,7 @@ import { ipcMain, dialog } from "electron";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import Controller from "./Controller.js";
 
 // Tái tạo biến __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -19,56 +20,14 @@ export function setupIpcHandlers(win) {
         alert("Settings clicked");
     });
     ipcMain.handle("get-games", async () => {
-        try {
-            const data = await fs.readFile(DATA_PATH, "utf-8");
-            return JSON.parse(data).games;
-        } catch (error) {
-            console.error("Error reading games data:", error);
-            return [];
-        }
+        return Controller.handleGetGames();
     });
 
     ipcMain.handle("add-game", async () => {
-        const { canceled, filePaths } = await dialog.showOpenDialog(win, {
-            title: "Select Game Executable",
-            filters: [{ name: "Executables", extensions: ["exe"] }],
-            properties: ["openFile"],
-        });
-
-        if (canceled || filePaths.length === 0) {
-            return null;
-        }
-
-        const filePath = filePaths[0];
-        const fileName = path.basename(filePath, path.extname(filePath));
-
-        try {
-            const data = await fs.readFile(DATA_PATH, "utf-8");
-            const json = JSON.parse(data);
-
-            const newGame = {
-                id: Date.now().toString(),
-                name: fileName,
-                path: filePath,
-            };
-
-            json.games.push(newGame);
-            await fs.writeFile(DATA_PATH, JSON.stringify(json, null, 2));
-
-            return newGame;
-        } catch (error) {
-            console.error("Error adding game:", error);
-            return null;
-        }
+        return Controller.addGame(win);
     });
 
     ipcMain.handle("run-game", async (event, game) => {
-        //running application
-        exec(`"${game.path}"`, (error) => {
-            if (error) {
-                console.error("Lỗi khi chạy game:", error);
-            }
-        });
-        return true;
+        return Controller.runGame(game);
     });
 }
