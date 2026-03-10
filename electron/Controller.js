@@ -34,7 +34,10 @@ export async function addGame(win) {
     }
 
     const filePath = filePaths[0];
-    const fileName = path.basename(filePath, path.extname(filePath));
+    let fileName = path.basename(filePath, path.extname(filePath));
+    fileName = fileName.replace(/([a-z])([A-Z])/g, "$1 $2");
+
+    console.log("Selected Game:", fileName, filePath);
 
     try {
         const id = await SteamGrid.fetchGameId(fileName);
@@ -54,6 +57,7 @@ export async function addGame(win) {
         };
         if (newGame.id === null) {
             console.error("Can't find any game ID for:", fileName);
+            alert(`Can't find any game ID for: ${fileName}`);
             return null;
         }
 
