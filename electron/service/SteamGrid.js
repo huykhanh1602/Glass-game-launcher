@@ -61,15 +61,3 @@ export async function fetchGameHeros(game_id) {
 }
 
 export default { fetchGameId, fetchGameIcon, fetchGameHeros };
-
-fetchGameId("arknight endfield").then((data) => {
-    if (data) {
-        console.log("Game ID data:", data);
-        fetchGameIcon(data).then((iconUrl) => {
-            console.log("Icon URL:", iconUrl);
-        });
-        fetchGameHeros(data).then((heroUrl) => {
-            console.log("Hero URL:", heroUrl);
-        });
-    }
-});
