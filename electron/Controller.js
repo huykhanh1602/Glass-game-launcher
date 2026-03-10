@@ -38,6 +38,11 @@ export async function addGame(win) {
 
     try {
         const id = await SteamGrid.fetchGameId(fileName);
+        if (!id) {
+            console.error("No game ID found for:", fileName);
+            alert(`No game ID found for: ${fileName}`);
+            return null;
+        }
         const data = await fs.readFile(DATA_PATH, "utf-8");
         const json = JSON.parse(data);
         const assetsPath = await SaveGameAssets(id);
