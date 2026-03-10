@@ -4,6 +4,7 @@ import { dialog } from "electron";
 import fs from "fs/promises";
 import { spawn } from "child_process";
 import { exec } from "child_process";
+import { fetchGameId } from "./service/SteamGrid.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,14 +36,18 @@ export async function addGame(win) {
     const fileName = path.basename(filePath, path.extname(filePath));
 
     try {
+        const id = await fetchGameId(fileName);
         const data = await fs.readFile(DATA_PATH, "utf-8");
         const json = JSON.parse(data);
-
         const newGame = {
-            id: Date.now().toString(),
+            id: id || null,
             name: fileName,
             path: filePath,
         };
+        if (newGame.id === null) {
+            console.error("Can't find any game ID for:", fileName);
+            return null;
+        }
 
         json.games.push(newGame);
         await fs.writeFile(DATA_PATH, JSON.stringify(json, null, 2));
@@ -62,5 +67,7 @@ export async function runGame(game) {
     });
     return true;
 }
+
+async function DownloadImage(url, dest) {}
 
 export default { handleGetGames, addGame, runGame };

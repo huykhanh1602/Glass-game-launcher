@@ -4,8 +4,6 @@ import { fileURLToPath } from "url";
 import process from "node:process";
 import fs from "fs/promises";
 import { spawn } from "child_process";
-import { exec } from "child_process";
-import SteamGrid from "./service/SteamGrid.js";
 import { setupIpcHandlers } from "./ipcHandlers.js";
 
 // Tái tạo biến __dirname
