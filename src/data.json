@@ -1,14 +1,3 @@
 {
-  "games": [
-    {
-      "id": "1",
-      "name": "meomeomeo",
-      "path": "C:/Games/Genshin/launcher.exe"
-    },
-    {
-      "id": "1772338314560",
-      "name": "Hades",
-      "path": "D:\\Data\\Program\\Hades_LinkNeverDie.Com\\x64\\Hades.exe"
-    }
-  ]
+    "games": []
 }
