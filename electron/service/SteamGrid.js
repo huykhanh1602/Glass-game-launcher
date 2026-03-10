@@ -4,7 +4,7 @@ export async function fetchGameId(gameName) {
     try {
         const response = await fetch(
             "https://www.steamgriddb.com/api/v2/search/autocomplete/" +
-                encodeURIComponent(gameName),
+                encodeURIComponent(encodeURIComponent(gameName)),
             {
                 headers: { Authorization: `Bearer ${SteamGridDB_API_KEY}` },
             },
