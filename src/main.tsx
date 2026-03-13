@@ -4,13 +4,13 @@ interface Game {
     id: string;
     name: string;
     path: string;
-    iconUrl?: string;
     description?: string;
-    backgroundImage?: string;
+    assetsPath?: string;
 }
 
 const DEFAULT_ICON = "https://cdn-icons-png.flaticon.com/512/681/681392.png";
-const DEFAULT_BG = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop";
+const DEFAULT_BG =
+    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop";
 
 let games: Game[] = [];
 let activeGameId: string | null = null;
@@ -48,8 +48,7 @@ function handleClose() {
     window.electronAPI?.closeApp();
 }
 
-function handleSettings() {
-}
+function handleSettings() {}
 
 function renderGames() {
     gameListEl.innerHTML = "";
@@ -59,7 +58,8 @@ function renderGames() {
         li.title = game.name;
 
         const img = document.createElement("img");
-        img.src = game.iconUrl || DEFAULT_ICON;
+        img.src =
+            `assets://${game.assetsPath ? `/${game.assetsPath}/icon.jpg` : ""}` || DEFAULT_ICON;
         img.alt = game.name;
 
         li.appendChild(img);
@@ -75,14 +75,16 @@ function selectGame(id: string) {
     if (game) {
         gameTitleEl.textContent = game.name;
         gameDescriptionEl.textContent = game.description || `Path: ${game.path}`;
-        appEl.style.backgroundImage = `url('${game.backgroundImage || DEFAULT_BG}')`;
+        const cleanPath = game.assetsPath ? game.assetsPath.replace(/\\/g, "/") : "";
+        const bgUrl = `assets:///${cleanPath}/cover.jpg`; // Thêm 3 dấu /
+        appEl.style.backgroundImage = `url('${bgUrl}')`;
     }
     renderGames();
 }
 
 async function addNewGame() {
     if (!window.electronAPI) return;
-    
+
     const newGame = await window.electronAPI.addGame();
     if (newGame) {
         games.push(newGame);
@@ -102,7 +104,7 @@ async function runGame() {
 
     // Bước kiểm tra an toàn:
     if (selectedGame) {
-        // Bên trong khối 'if' này, TypeScript hiểu chắc chắn selectedGame là 'Game' 
+        // Bên trong khối 'if' này, TypeScript hiểu chắc chắn selectedGame là 'Game'
         // chứ không phải 'undefined' nữa, nên lỗi sẽ biến mất!
         await window.electronAPI.runGame(selectedGame);
     } else {
@@ -114,7 +116,7 @@ async function init() {
     if (window.electronAPI) {
         games = await window.electronAPI.getGames();
     }
-    
+
     addGameBtn?.addEventListener("click", addNewGame);
     minimizeBtn?.addEventListener("click", handleMinimize);
     settingsBtn?.addEventListener("click", handleSettings);

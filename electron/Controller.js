@@ -80,6 +80,8 @@ export async function runGame(game) {
     return true;
 }
 
+async function getGameAssets(gameId) {}
+
 /**
  * Download and save game assets (icon, cover) to local storage for later use
  * @param {String} gameId of the game to save assets

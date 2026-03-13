@@ -5,11 +5,26 @@ import process from "node:process";
 import fs from "fs/promises";
 import { spawn } from "child_process";
 import { setupIpcHandlers } from "./ipcHandlers.js";
+import { protocol } from "electron";
+import { net } from "electron";
 
 // Tái tạo biến __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_PATH = path.join(__dirname, "..", "src", "data.json");
+
+app.whenReady().then(() => {
+    protocol.handle("assets", (request) => {
+        const url = request.url.replace("assets://", "");
+        try {
+            console.log("Fetching asset:", url);
+            return net.fetch("file://" + decodeURIComponent(url));
+        } catch (error) {
+            console.error(error);
+            return Promise.reject(error);
+        }
+    });
+});
 
 function createWindow() {
     const win = new BrowserWindow({
